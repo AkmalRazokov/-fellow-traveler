@@ -1,5 +1,3 @@
-
-from project.db.database import engine, Base
 from fastapi import FastAPI
 import uvicorn
 from project.routes.users import router as user_router
@@ -10,7 +8,7 @@ from project.routes.search_trip import router as search_trip_router
 from project.routes.history_trips_driver import router as history_driver_router
 from project.routes.history_trips_passenger import router as history_passenger_router
 from project.routes.chat import router as chat_router
-from midleware import AdvancedMiddleware
+from project.midlewar.midleware import AdvancedMiddleware
 
 
 app = FastAPI()
@@ -31,4 +29,4 @@ app.add_middleware(AdvancedMiddleware)
 
 
 if __name__ == "__main__":
-    uvicorn.run("project.main:app", host="localhost", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8003, reload=True)
