@@ -3,7 +3,7 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from project.db.database import Base, SQLALCHEMY_DATABASE_URL
+from project.db.database import Base, DATABASE_URL
 from project.models.models import *
 
 
@@ -44,7 +44,7 @@ def run_migrations_offline() -> None:
     """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=SQLALCHEMY_DATABASE_URL,
+        url=DATABASE_URL,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -62,7 +62,7 @@ def run_migrations_online() -> None:
 
     """
     connectable = engine_from_config(
-        {'sqlalchemy.url': SQLALCHEMY_DATABASE_URL},
+        {'sqlalchemy.url': DATABASE_URL},
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

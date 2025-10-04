@@ -5,7 +5,7 @@ from project.db.database import get_db
 from project.models.models import Trip, User
 from project.schemas.trip import TripCreateSchema, TripReadSchema
 from project.auth.auth_bearer import JWTBearer
-from project.auth.auth_handler import decode_jwt
+
 
 router = APIRouter()
 

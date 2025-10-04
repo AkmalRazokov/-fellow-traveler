@@ -1,5 +1,5 @@
-from project.services.verification import check_code
-from fastapi import APIRouter, Depends, HTTPException
+from project.services.verification import generate_verification_code
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from project.db.database import get_db
 from project.models.models import User
@@ -10,6 +10,7 @@ from project.auth.auth_handler import generate_token
 from project.auth.auth_bearer import JWTBearer
 from project.utils.hashing import verify_password
 from project.services.sms_service import send_sms
+from project.settings.config import DEBUG
 
 
 router = APIRouter()
@@ -33,7 +34,7 @@ def verify_code(phone: str, code: str, db: Session = Depends(get_db)):
 
 
 
-@router.post("/auth/register")
+@router.post("/auth/register", status_code=status.HTTP_201_CREATED)
 def register(user_data: UserRegisterSchema, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.phone == user_data.phone).first()
     if existing_user:
@@ -53,15 +54,14 @@ def register(user_data: UserRegisterSchema, db: Session = Depends(get_db)):
     code = assign_code(new_user.phone)
     send_sms(new_user.phone, code)
 
-    return {"message": "Регистрация успешна. Код отправлен."}
-
+    return {"message": "Пользователь успешно зарегистрирован", "code": code}
 
 
 
 
 @router.post("/auth/login")
 def login(user_data: UserLoginSchema, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.phone == user_data.phone).first()
+    user = db.query(User).filter(User.phone==user_data.phone).first()
     if not user or not verify_password(user_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Неверный номер или пароль")
     
@@ -74,8 +74,8 @@ def login(user_data: UserLoginSchema, db: Session = Depends(get_db)):
 
 
 @router.get("/me", response_model=UserReadSchema)
-def get_my_profile(db: Session = Depends(get_db),user_id:int = Depends(JWTBearer())):
-    user = db.query(User).filter(User.id == user_id).first()
+def get_my_profile(db: Session = Depends(get_db),user_id:int=Depends(JWTBearer())):
+    user = db.query(User).filter(User.id==user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user

@@ -40,7 +40,7 @@ class Trip(Base):
     driver: Mapped["User"] = relationship(back_populates="trips")
     reviews: Mapped[List["Review"]] = relationship(back_populates="trip")
     bookings: Mapped[List["Booking"]] = relationship(back_populates="trip", cascade="all, delete-orphan")
-    # messages: Mapped[List["Message"]] = relationship("Message", back_populates="trip", cascade="all, delete-orphan")
+    messages: Mapped[List["Message"]] = relationship("Message", back_populates="trip", cascade="all, delete-orphan")
 
 
 class Booking(Base):
@@ -74,17 +74,17 @@ class Review(Base):
 
 
 
-# class Message(Base):
-#     __tablename__ = "messages"
+class Message(Base):
+    __tablename__ = "messages"
 
-#     id: Mapped[int] = mapped_column(primary_key=True)
-#     trip_id: Mapped[int] = mapped_column(ForeignKey("trips.id"))
-#     sender_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-#     receiver_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-#     content: Mapped[str] = mapped_column(Text)
-#     timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-#     is_read: Mapped[bool] = mapped_column(Boolean, default=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    trip_id: Mapped[Optional[int]] = mapped_column(ForeignKey("trips.id"), nullable=True)
+    sender_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    receiver_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    content: Mapped[str] = mapped_column(Text)
+    timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    is_read: Mapped[bool] = mapped_column(Boolean, default=False)
 
-#     trip = relationship("Trip", back_populates="messages")
-#     sender = relationship("User", foreign_keys=[sender_id])
-#     receiver = relationship("User", foreign_keys=[receiver_id])
+    trip = relationship("Trip", back_populates="messages")
+    sender = relationship("User", foreign_keys=[sender_id])
+    receiver = relationship("User", foreign_keys=[receiver_id])
